@@ -1,4 +1,3 @@
-import { hexStrArrToStr, toAddress } from './utils';
 import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
 
 export async function handleDeploy() {
@@ -10,39 +9,23 @@ export async function handleDeploy() {
 //
 // See here for the original logic used to create post transactions:
 // https://gist.github.com/perfectmak/417a4dab69243c517654195edf100ef9#file-index-ts
-export async function handleNewPost({ block, tx, event, mysql }: Parameters<CheckpointWriter>[0]) {
+export async function handleIncreaseBalance({
+  block,
+  tx,
+  event,
+  mysql
+}: Parameters<CheckpointWriter>[0]) {
   if (!event) return;
 
-  const author = toAddress(event.data[0]);
-  let content = '';
-  let tag = '';
-  const contentLength = BigInt(event.data[1]);
-  const tagLength = BigInt(event.data[2 + Number(contentLength)]);
+  const currentBalance = BigInt(event.data[0]);
+  const amount = BigInt(event.data[1]);
   const timestamp = block.timestamp;
   const blockNumber = block.block_number;
 
-  // parse content bytes
-  try {
-    content = hexStrArrToStr(event.data, 2, contentLength);
-  } catch (e) {
-    console.error(`failed to decode content on block [${blockNumber}]: ${e}`);
-    return;
-  }
-
-  // parse tag bytes
-  try {
-    tag = hexStrArrToStr(event.data, 3 + Number(contentLength), tagLength);
-  } catch (e) {
-    console.error(`failed to decode tag on block [${blockNumber}]: ${e}`);
-    return;
-  }
-
-  // post object matches fields of Post type in schema.gql
   const post = {
-    id: `${author}/${tx.transaction_hash}`,
-    author,
-    content,
-    tag,
+    id: tx.transaction_hash,
+    current_balance: currentBalance,
+    amount,
     tx_hash: tx.transaction_hash,
     created_at: timestamp,
     created_at_block: blockNumber

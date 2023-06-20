@@ -22,7 +22,7 @@ link](https://github.com/snapshot-labs/checkpoint-template/generate).
 After cloning this project, run the following command to install dependencies:
 
 ```bash
-yarn # or 'npm install'
+pnpm install
 ```
 
 Next, you'll need a MySQL server running and a connection string available as environment variable `DATABASE_URL`.
@@ -37,7 +37,7 @@ docker-compose up -d
 Next, start up the server:
 
 ```bash
-yarn dev # for local development or else `yarn start` for production build.
+pnpm run dev
 ```
 
 This will expose a GraphQL API endpoint locally at http://localhost:3000. You can easily interact with this endpoint using the graphiql interface by visiting http://localhost:3000 in your browser.
@@ -48,12 +48,11 @@ To fetch a list of Post's try the following query:
 query {
   posts {
     id
-    author
-    content
-    tag
-    created_at_block
-    created_at
+    current_balance
+    amount
     tx_hash
+    created_at
+    created_at_block
   }
 }
 ```
@@ -62,4 +61,4 @@ To learn more about the different ways you can query the GraphQL API, visit the 
 
 ## License
 
-MIT
+GNU Lesser General Public License v3.0
